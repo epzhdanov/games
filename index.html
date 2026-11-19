@@ -158,6 +158,7 @@ button:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
 .eq-term.slot.filled{border-style:solid;background:#FFF9F1}
 .eq-term.slot.empty-q{color:#B9C4CB}
 .eq-term.total{background:#FFF1C9;color:#8A5A00}
+.eq-term.wide{font-size:30px;min-width:120px}
 .eq-term.bump{animation:bump .3s ease}
 @keyframes bump{50%{transform:scale(1.12)}}
 .eq-term.wiggle{animation:wiggle .4s ease}
@@ -414,6 +415,46 @@ details.settings[open] summary::after{content:'−'}
 .flight-note{text-align:center;font-size:15px;font-weight:800;color:var(--muted);min-height:22px}
 .flight-note.up{color:var(--green-dark)}
 .flight-note.down{color:var(--orange)}
+
+/* ---------- Tournament ---------- */
+.title span.grad7{background-image:linear-gradient(90deg,#9B5DE5,#F4B942)}
+.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;max-width:960px;margin:0 auto;padding:10px 16px 40px}
+@media (max-width:520px){.tgrid{grid-template-columns:repeat(3,1fr);gap:8px;padding:8px 10px 30px}}
+.hcard{position:relative;background:#fff;border-radius:20px;padding:10px 8px 8px;box-shadow:0 6px 16px rgba(43,58,66,.14);border:3px solid #EEF2F5;display:flex;flex-direction:column;align-items:center;gap:4px;transition:transform .15s ease,box-shadow .15s ease}
+.hcard:hover:not(:disabled){transform:translateY(-4px);box-shadow:0 12px 24px rgba(43,58,66,.18)}
+.hcard:disabled{cursor:default}
+.hcard .art{height:64px;display:flex;align-items:center;justify-content:center}
+.hcard .art svg{width:64px;height:64px}
+.hcard .art .em{font-size:50px;line-height:1}
+.hcard .hname{font-size:13px;font-weight:900;text-align:center;line-height:1.1;min-height:28px;display:flex;align-items:center}
+.hcard .ex{font-size:18px;font-weight:900;background:#F3F6F9;border-radius:10px;padding:3px 10px;white-space:nowrap}
+.hcard .ex.l3{font-size:14px}
+.hcard .pts{position:absolute;top:-10px;right:-8px;background:#F4B942;color:#5a3b00;font-weight:900;font-size:13px;padding:3px 8px;border-radius:999px;box-shadow:0 3px 8px rgba(0,0,0,.15)}
+.hcard .pts.p20{background:#F28C28;color:#fff}
+.hcard .pts.p30{background:#9B5DE5;color:#fff}
+.hcard.done{opacity:.55;border-color:#DDE3E8}
+.hcard.done .owner{position:absolute;left:-6px;top:-10px;width:30px;height:30px;border-radius:50%;background:#fff;box-shadow:0 3px 8px rgba(0,0,0,.18);display:flex;align-items:center;justify-content:center;font-size:18px}
+.hcard.done.mia{border-color:var(--orange)}
+.hcard.done.cpu{border-color:var(--blue)}
+.hcard.done.burnt{filter:grayscale(1)}
+.hcard .surprise{font-size:12px;font-weight:900;color:var(--green-dark)}
+.hcard .surprise.bad{color:var(--red)}
+.t-modal .modal-art{width:150px;height:150px}
+.t-modal .modal-art svg{width:140px;height:140px}
+.t-eq{display:flex;align-items:center;justify-content:center;gap:8px;margin:6px 0 8px;flex-wrap:nowrap}
+.t-eq .eq-term{min-width:64px;height:64px;font-size:34px;border-radius:16px;padding:0 8px}
+.t-eq .eq-op{font-size:30px}
+.t-eq .eq-term.wide{font-size:22px;min-width:96px}
+.t-numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:270px;margin:0 auto}
+.t-numpad .key{height:50px;font-size:24px}
+.t-check{max-width:270px;width:100%;margin:8px auto 0;height:52px;border-radius:16px;font-size:20px;font-weight:900;color:#fff;background:linear-gradient(180deg,#5BD594,var(--green));box-shadow:0 6px 0 #22804E}
+.t-check:active{transform:translateY(4px);box-shadow:0 2px 0 #22804E}
+.t-result{font-size:20px;font-weight:900;margin:8px 0 0;min-height:26px}
+.t-result.ok{color:var(--green-dark)}
+.t-result.bad{color:var(--red)}
+.t-surprise{display:flex;flex-direction:column;align-items:center;gap:4px;margin-top:6px}
+.t-surprise svg{width:110px;height:110px;animation:pop .5s cubic-bezier(.2,1.6,.4,1)}
+.t-surprise .big-emoji{font-size:72px;line-height:1;animation:pop .5s cubic-bezier(.2,1.6,.4,1)}
 </style>
 </head>
 <body>
@@ -460,6 +501,13 @@ details.settings[open] summary::after{content:'−'}
         <div class="tile-art" id="tile-art-rocket"></div>
         <div class="tile-name">Математическая ракета</div>
         <div class="tile-desc">Сложение и вычитание: примеры подстраиваются под тебя и помнят ошибки</div>
+        <span class="tile-play">Играть</span>
+      </button>
+
+      <button class="tile" data-go="tour" style="--c:#9B5DE5;--bg:#F1EAFB">
+        <div class="tile-art" id="tile-art-tour"></div>
+        <div class="tile-name">Сказочный турнир</div>
+        <div class="tile-desc">Герои сказок с примерами: решай, собирай очки и сюрпризы, обгони компьютер</div>
         <span class="tile-play">Играть</span>
       </button>
     </div>
@@ -739,9 +787,12 @@ details.settings[open] summary::after{content:'−'}
         <button class="mode-btn" data-mode="minus">Вычитание</button>
         <button class="mode-btn" data-mode="mix">Вперемешку</button>
       </div>
+      <h2 class="label">Уровень</h2>
+      <div class="modes" id="r-level"></div>
+      <p class="start-hint" id="r-levelname" style="margin-top:10px"></p>
       <div class="progress-box" id="r-progress"></div>
       <div><button id="r-play" class="btn-big">Полетели!</button></div>
-      <p class="start-hint">Уровни: до 5, до 10, до 20 без перехода через десяток, до 20 с переходом, круглые десятки, двузначные без перехода и с переходом. Уровень растёт после 8 правильных ответов подряд и опускается после двух ошибок подряд.</p>
+      <p class="start-hint">Уровни: до 5, до 10, до 20 без перехода через десяток, до 20 с переходом, круглые десятки, двузначные без перехода, с переходом, три числа до 100. Уровень растёт после 8 правильных ответов подряд и опускается после двух ошибок подряд, а вручную его можно выставить кнопками выше.</p>
     </div>
   </section>
   <section id="r-game" class="screen">
@@ -779,6 +830,46 @@ details.settings[open] summary::after{content:'−'}
       <div class="win-stars" id="r-end-stars"></div>
       <p id="r-end-stats"></p>
       <div class="win-btns"><button id="r-again" class="btn-big green">Ещё полёт</button><button id="r-menu" class="btn-ghost">Все игры</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TOURNAMENT ================= -->
+<section id="view-tour" class="view">
+  <section id="t-start" class="screen active">
+    <div class="topline"><button class="pill-btn" data-go=""><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>Все игры</button></div>
+    <div class="start-wrap">
+      <h1 class="title">Сказочный<br><span class="grad7">турнир</span></h1>
+      <p class="subtitle">На поле 20 сказочных героев, и у каждого свой пример и своя цена. Мия и компьютер ходят по очереди: выбираешь героя, решаешь пример на мини-компьютере и забираешь очки. А под героем может прятаться сюрприз!</p>
+      <div class="rules" id="t-rules"></div>
+      <h2 class="label">Уровень примеров</h2>
+      <div class="modes" id="t-level"></div>
+      <p class="start-hint" id="t-levelname" style="margin-top:10px"></p>
+      <div><button id="t-play" class="btn-big">Играть!</button></div>
+      <p class="start-hint">Дешёвые герои (10 очков) носят примеры выбранного уровня, дорогие (20 и 30) на один-два уровня сложнее. Неверный ответ: герой уходит без очков, и ход переходит сопернику.</p>
+    </div>
+  </section>
+  <section id="t-game" class="screen">
+    <header class="topbar">
+      <button id="t-home" class="icon-btn" title="В начало" aria-label="В начало"><svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10"/><path d="M10 20v-6h4v6"/></svg></button>
+      <div class="scoreboard">
+        <div class="player mia active" id="t-p-mia"><div class="avatar">👧</div><div><div class="pname">Мия</div><div class="pscore" id="t-s-mia">0</div></div></div>
+        <div class="vs">против</div>
+        <div class="player cpu" id="t-p-cpu"><div class="avatar">🤖</div><div><div class="pname">Компьютер</div><div class="pscore" id="t-s-cpu">0</div></div></div>
+      </div>
+      <button id="t-sound" class="icon-btn" title="Звук" aria-label="Звук"></button>
+    </header>
+    <div class="status mia" id="t-status">Мия, выбери героя!</div>
+    <div class="tgrid" id="t-grid"></div>
+  </section>
+  <div id="t-modal" class="overlay"><div class="modal-card t-modal" id="t-modal-card"></div></div>
+  <div id="t-end" class="overlay">
+    <canvas id="t-confetti"></canvas>
+    <div class="win-card">
+      <div class="win-hero" id="t-end-hero"></div>
+      <h2 id="t-end-title"></h2>
+      <p id="t-end-text"></p>
+      <div class="win-btns"><button id="t-again" class="btn-big green">Играть ещё</button><button id="t-menu" class="btn-ghost">Все игры</button></div>
     </div>
   </div>
 </section>
@@ -939,9 +1030,9 @@ function speak(text, lang){
 /* ========================================================= */
 /* Router                                                     */
 /* ========================================================= */
-const views = { menu:$('view-menu'), maze:$('view-maze'), cards:$('view-cards'), pond:$('view-pond'), scales:$('view-scales'), croc:$('view-croc'), rocket:$('view-rocket') };
-const onEnter = { maze:null, cards:null, pond:null, scales:null, croc:null, rocket:null };
-function currentRoute(){ const h=(location.hash||'').replace('#',''); return ['maze','cards','pond','scales','croc','rocket'].includes(h)?h:'menu'; }
+const views = { menu:$('view-menu'), maze:$('view-maze'), cards:$('view-cards'), pond:$('view-pond'), scales:$('view-scales'), croc:$('view-croc'), rocket:$('view-rocket'), tour:$('view-tour') };
+const onEnter = { maze:null, cards:null, pond:null, scales:null, croc:null, rocket:null, tour:null };
+function currentRoute(){ const h=(location.hash||'').replace('#',''); return ['maze','cards','pond','scales','croc','rocket','tour'].includes(h)?h:'menu'; }
 function route(){
   const r = currentRoute();
   Object.keys(views).forEach(k=>views[k].classList.toggle('active', k===r));
@@ -2178,6 +2269,74 @@ $('tile-art-croc').innerHTML = crocSVG();
   function hideEnd(){ $('k-end').classList.remove('show'); if(K.stopConfetti) K.stopConfetti(); }
 })();
 
+
+/* ========================================================= */
+/* Shared: levelled example generator (rocket, tournament)    */
+/* ========================================================= */
+const LEVELS = ['до 5','до 10','до 20 без перехода через десяток','до 20 с переходом через десяток','круглые десятки и двузначное с однозначным','двузначные без перехода','двузначные с переходом','три числа до 100'];
+function genProblem(level, op, mixed){
+  const r = (x,y) => x + Math.floor(Math.random()*(y-x+1)); let a, b;
+  if(level>=8){
+    let c, op2;
+    if(mixed){ if(Math.random()<.5){ a=r(10,60); b=r(5,100-a-5); c=r(1,a+b-1); op='+'; op2='-'; } else { a=r(30,99); b=r(5,a-5); c=r(1,100-(a-b)); op='-'; op2='+'; } }
+    else if(op==='+'){ a=r(5,50); b=r(5,40); c=r(1,Math.max(1,100-a-b)); op2='+'; }
+    else { a=r(40,99); b=r(5,20); c=r(1,a-b-1); op2='-'; }
+    const m = op==='+' ? a+b : a-b, ans = op2==='+' ? m+c : m-c;
+    return { a, b, op, c, op2, terms:3, ans, text:`${a} ${op} ${b} ${op2} ${c}`, level:8 };
+  }
+  if(level===1){ if(op==='+'){ a=r(1,4); b=r(1,5-a); } else { a=r(2,5); b=r(1,a-1); } }
+  else if(level===2){ if(op==='+'){ a=r(1,9); b=r(1,10-a); } else { a=r(3,10); b=r(1,a-1); } }
+  else if(level===3){ if(op==='+'){ if(Math.random()<.3){ a=10; b=r(1,9); } else { a=r(11,18); b=r(1,9-(a%10)); } } else { a=r(11,19); b=Math.random()<.3 ? 10 : r(1,a%10); } }
+  else if(level===4){ if(op==='+'){ a=r(2,9); b=r(11-a,9); } else { a=r(11,18); b=r(a-9,9); } }
+  else if(level===5){
+    if(Math.random()<.5){ if(op==='+'){ a=10*r(1,8); b=10*r(1,(100-a)/10); } else { a=10*r(2,10); b=10*r(1,a/10-1); } }
+    else { if(op==='+'){ const u=r(1,8); a=10*r(1,8)+u; b=r(1,9-u); } else { const u=r(2,9); a=10*r(1,9)+u; b=r(1,u-1); } }
+  }
+  else if(level===6){
+    if(op==='+'){ const ta=r(1,8), ua=r(1,8); a=10*ta+ua; b=10*r(1,9-ta)+r(1,9-ua); }
+    else { const ta=r(2,9), ua=r(1,9); a=10*ta+ua; b=10*r(1,ta-1)+r(0,ua); }
+  }
+  else {
+    if(op==='+'){ const ua=r(2,9); a=10*r(1,5)+ua; b=10*r(1,4)+r(10-ua,9); if(a+b>100) b-=10; }
+    else { const ua=r(0,8); a=10*r(3,9)+ua; b=10*r(1,Math.floor(a/10)-1)+r(ua+1,9); }
+  }
+  const ans = op==='+' ? a+b : a-b;
+  return { a, b, op, terms:2, ans, text:`${a} ${op} ${b}`, level };
+}
+function buildNumpad(container, onKey){
+  container.innerHTML = '';
+  ['1','2','3','4','5','6','7','8','9','del','0','clear'].forEach(k=>{
+    const b = document.createElement('button'); b.className='key';
+    if(k==='del'){ b.classList.add('del'); b.innerHTML='<svg viewBox="0 0 24 24"><path d="M9 5h11a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H9l-6-7 6-7z"/><path d="M13 9.5l5 5M18 9.5l-5 5"/></svg>'; }
+    else if(k==='clear'){ b.classList.add('del'); b.textContent='C'; }
+    else b.textContent=k;
+    b.addEventListener('click', ()=>onKey(k)); container.appendChild(b);
+  });
+}
+/* hint text for a levelled problem (shared) */
+function problemHint(p, reveal){
+  let body = '';
+  if(p.terms===3){
+    const m = p.op==='+' ? p.a+p.b : p.a-p.b;
+    body = `<div class="hint-text">По шагам: сначала <b>${p.a} ${p.op} ${p.b} = ${m}</b>, потом <b>${m} ${p.op2} ${p.c}</b>.</div>`;
+  } else if(p.a<=20 && p.b<=20 && p.ans<=20){
+    if(p.op==='+'){
+      const dots = Array.from({length:p.a},()=>'<div class="dot on"></div>').join('') + Array.from({length:p.b},()=>'<div class="dot on2"></div>').join('') + Array.from({length:Math.max(0,20-p.a-p.b)},()=>'<div class="dot"></div>').join('');
+      body = `<div class="hint-text">Оранжевых кружков <b>${p.a}</b>, синих <b>${p.b}</b>. Сколько всего закрашенных?</div><div class="frame">${dots}</div>`;
+    } else {
+      const dots = Array.from({length:p.a},(_,i)=>`<div class="dot ${i>=p.a-p.b?'x':'on'}"></div>`).join('') + Array.from({length:Math.max(0,20-p.a)},()=>'<div class="dot"></div>').join('');
+      body = `<div class="hint-text">Было <b>${p.a}</b>, <b>${p.b}</b> зачёркнули. Сколько осталось закрашенных?</div><div class="frame">${dots}</div>`;
+    }
+  } else if(p.a%10===0 && p.b%10===0){
+    body = `<div class="hint-text">Считаем десятками: <b>${p.a/10}</b> ${p.op} <b>${p.b/10}</b> десятков. А потом припиши ноль.</div>`;
+  } else {
+    const tb = Math.floor(p.b/10)*10, ub = p.b%10, mid = p.op==='+' ? p.a+tb : p.a-tb;
+    body = tb ? `<div class="hint-text">По шагам: сначала <b>${p.a} ${p.op} ${tb} = ${mid}</b>, потом <b>${mid} ${p.op} ${ub}</b>.</div>`
+              : `<div class="hint-text">Подсказка: отсчитай от <b>${p.a}</b> ${p.op==='+'?'вперёд':'назад'} <b>${ub}</b> ${plural(ub,'шаг','шага','шагов')}.</div>`;
+  }
+  return body + (reveal ? `<div class="hint-answer">Ответ: <span>${p.ans}</span></div>` : '');
+}
+
 /* ========================================================= */
 /* GAME 6: Math rocket (adaptive add / subtract)              */
 /* ========================================================= */
@@ -2196,8 +2355,7 @@ const rocketSVG = () => `<svg viewBox="0 0 120 64" aria-hidden="true">${ROCKET}<
 $('tile-art-rocket').innerHTML = `<svg viewBox="0 0 120 64" aria-hidden="true">${ROCKET}</svg>`;
 
 (function(){
-  const FLIGHT = 10, MAXL = 7, UP_STREAK = 8;
-  const LEVELS = ['до 5','до 10','до 20 без перехода через десяток','до 20 с переходом через десяток','круглые десятки и двузначное с однозначным','двузначные без перехода','двузначные с переходом'];
+  const FLIGHT = 10, MAXL = 8, UP_STREAK = 8;
   const MODES = { plus:'сложение', minus:'вычитание', mix:'вперемешку' };
   const randInt = (a,b) => a + Math.floor(Math.random()*(b-a+1));
   const fresh = () => ({ level:1, streak:0, recent:[] });
@@ -2218,27 +2376,6 @@ $('tile-art-rocket').innerHTML = `<svg viewBox="0 0 120 64" aria-hidden="true">$
   onEnter.rocket = ()=>{ clearTimers(); R.busy=false; if(R.stopConfetti) R.stopConfetti(); renderStart(); show('start'); };
 
   /* ---- problem generator ---- */
-  function gen(level, op){
-    const r = randInt; let a, b;
-    if(level===1){ if(op==='+'){ a=r(1,4); b=r(1,5-a); } else { a=r(2,5); b=r(1,a-1); } }
-    else if(level===2){ if(op==='+'){ a=r(1,9); b=r(1,10-a); } else { a=r(3,10); b=r(1,a-1); } }
-    else if(level===3){ if(op==='+'){ if(Math.random()<.3){ a=10; b=r(1,9); } else { a=r(11,18); b=r(1,9-(a%10)); } } else { a=r(11,19); b=Math.random()<.3 ? 10 : r(1,a%10); } }
-    else if(level===4){ if(op==='+'){ a=r(2,9); b=r(11-a,9); } else { a=r(11,18); b=r(a-9,9); } }
-    else if(level===5){
-      if(Math.random()<.5){ if(op==='+'){ a=10*r(1,8); b=10*r(1,(100-a)/10); } else { a=10*r(2,10); b=10*r(1,a/10-1); } }
-      else { if(op==='+'){ const u=r(1,8); a=10*r(1,8)+u; b=r(1,9-u); } else { const u=r(2,9); a=10*r(1,9)+u; b=r(1,u-1); } }
-    }
-    else if(level===6){
-      if(op==='+'){ const ta=r(1,8), ua=r(1,8); a=10*ta+ua; b=10*r(1,9-ta)+r(1,9-ua); }
-      else { const ta=r(2,9), ua=r(1,9); a=10*ta+ua; b=10*r(1,ta-1)+r(0,ua); }
-    }
-    else {
-      if(op==='+'){ const ua=r(2,9); a=10*r(1,5)+ua; b=10*r(1,4)+r(10-ua,9); if(a+b>100) b-=10; }
-      else { const ua=r(0,8); a=10*r(3,9)+ua; b=10*r(1,Math.floor(a/10)-1)+r(ua+1,9); }
-    }
-    const ans = op==='+' ? a+b : a-b;
-    return { a, b, op, ans, text:`${a} ${op} ${b}`, level };
-  }
   function pickOp(){ return D.mode==='mix' ? rnd(['+','-']) : (D.mode==='plus' ? '+' : '-'); }
   function nextProblem(){
     const pr = prog(), op = pickOp();
@@ -2246,8 +2383,8 @@ $('tile-art-rocket').innerHTML = `<svg viewBox="0 0 120 64" aria-hidden="true">$
     if(weakList.length && Math.random()<.35){ const w = rnd(weakList); return Object.assign({}, w.p, {fromWeak:true}); }
     let level = pr.level;
     if(level>1 && Math.random()<.12) level--;
-    let p = gen(level, op), n = 0;
-    while(R.problem && p.text===R.problem.text && n++<8) p = gen(level, op);
+    let p = genProblem(level, op, D.mode==='mix'), n = 0;
+    while(R.problem && p.text===R.problem.text && n++<8) p = genProblem(level, op, D.mode==='mix');
     return p;
   }
   function recordCorrect(p){
@@ -2261,7 +2398,7 @@ $('tile-art-rocket').innerHTML = `<svg viewBox="0 0 120 64" aria-hidden="true">$
   function recordWrong(p){
     const pr = prog(); pr.streak=0; pr.recent.push(0); if(pr.recent.length>20) pr.recent.shift();
     D.total.answered++; D.total.mistakes++;
-    const w = D.weak[p.text] || (D.weak[p.text] = { p:{a:p.a,b:p.b,op:p.op,ans:p.ans,text:p.text,level:p.level}, n:0, ok:0 });
+    const w = D.weak[p.text] || (D.weak[p.text] = { p:{a:p.a,b:p.b,op:p.op,c:p.c,op2:p.op2,terms:p.terms||2,ans:p.ans,text:p.text,level:p.level}, n:0, ok:0 });
     w.n++; w.ok=0;
     let note = '';
     const last = pr.recent.slice(-5);
@@ -2272,6 +2409,9 @@ $('tile-art-rocket').innerHTML = `<svg viewBox="0 0 120 64" aria-hidden="true">$
   /* ---- start screen ---- */
   function renderStart(){
     $('r-mode').querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('selected', b.dataset.mode===D.mode));
+    $('r-level').innerHTML = LEVELS.map((_,i)=>`<button class="mode-btn ${prog().level===i+1?'selected':''}" data-lvl="${i+1}">${i+1}</button>`).join('');
+    $('r-level').querySelectorAll('.mode-btn').forEach(b=>b.addEventListener('click', ()=>{ const pr=prog(); pr.level=parseInt(b.dataset.lvl,10); pr.streak=0; pr.recent=[]; save(); renderStart(); Sfx.play('tap'); }));
+    $('r-levelname').textContent = `Сейчас для режима «${MODES[D.mode]}»: уровень ${prog().level}, примеры ${LEVELS[prog().level-1]}. Дальше игра сама поднимает и опускает уровень.`;
     const weak = Object.values(D.weak).sort((x,y)=>y.n-x.n);
     const chips = weak.length ? `<div class="chips">${weak.slice(0,12).map(w=>`<span class="chip ${w.ok?'ok':''}">${w.p.text}</span>`).join('')}${weak.length>12?`<span class="chip">ещё ${weak.length-12}</span>`:''}</div>` : '<div class="chips"><span class="chip ok">пока ни одной ошибки</span></div>';
     $('r-progress').innerHTML = `
@@ -2328,41 +2468,16 @@ $('tile-art-rocket').innerHTML = `<svg viewBox="0 0 120 64" aria-hidden="true">$
   function setNote(t, cls){ const n=$('r-note'); n.textContent=t; n.className='flight-note '+(cls||''); }
   function renderEq(){
     const p = R.problem; if(!p) return;
-    $('r-a').textContent = p.a; $('r-op').textContent = p.op; $('r-b').textContent = p.b;
+    const three = p.terms===3;
+    $('r-a').textContent = three ? `${p.a} ${p.op} ${p.b}` : p.a; $('r-a').classList.toggle('wide', three);
+    $('r-op').textContent = three ? p.op2 : p.op; $('r-b').textContent = three ? p.c : p.b;
     const slot = $('r-ans'); slot.className = 'eq-term slot ' + (R.input?'filled':'empty-q'); slot.textContent = R.input || '?';
   }
   function bumpSlot(cls){ const slot=$('r-ans'); slot.classList.remove('bump','wiggle'); void slot.offsetWidth; slot.classList.add(cls||'bump'); }
-  function showHint(reveal){
-    const p = R.problem, h = $('r-hint'); let body = '';
-    if(p.a<=20 && p.b<=20 && p.ans<=20){
-      if(p.op==='+'){
-        const dots = Array.from({length:p.a},()=>'<div class="dot on"></div>').join('') + Array.from({length:p.b},()=>'<div class="dot on2"></div>').join('') + Array.from({length:Math.max(0,20-p.a-p.b)},()=>'<div class="dot"></div>').join('');
-        body = `<div class="hint-text">Оранжевых кружков <b>${p.a}</b>, синих <b>${p.b}</b>. Сколько всего закрашенных?</div><div class="frame">${dots}</div>`;
-      } else {
-        const dots = Array.from({length:p.a},(_,i)=>`<div class="dot ${i>=p.a-p.b?'x':'on'}"></div>`).join('') + Array.from({length:Math.max(0,20-p.a)},()=>'<div class="dot"></div>').join('');
-        body = `<div class="hint-text">Было <b>${p.a}</b>, <b>${p.b}</b> зачёркнули. Сколько осталось закрашенных?</div><div class="frame">${dots}</div>`;
-      }
-    } else if(p.a%10===0 && p.b%10===0){
-      body = `<div class="hint-text">Считаем десятками: <b>${p.a/10}</b> ${p.op} <b>${p.b/10}</b> десятков. А потом припиши ноль.</div>`;
-    } else {
-      const tb = Math.floor(p.b/10)*10, ub = p.b%10;
-      const mid = p.op==='+' ? p.a+tb : p.a-tb;
-      body = tb ? `<div class="hint-text">По шагам: сначала <b>${p.a} ${p.op} ${tb} = ${mid}</b>, потом <b>${mid} ${p.op} ${ub}</b>.</div>`
-                : `<div class="hint-text">Подсказка: отсчитай от <b>${p.a}</b> ${p.op==='+'?'вперёд':'назад'} <b>${ub}</b> ${plural(ub,'шаг','шага','шагов')}.</div>`;
-    }
-    h.innerHTML = body + (reveal ? `<div class="hint-answer">Ответ: <span>${p.ans}</span></div>` : '');
-    h.classList.add('show');
-  }
+  function showHint(reveal){ const h=$('r-hint'); h.innerHTML = problemHint(R.problem, reveal); h.classList.add('show'); }
   function hideHint(){ const h=$('r-hint'); h.classList.remove('show'); h.innerHTML=''; }
 
-  const np = $('r-numpad');
-  ['1','2','3','4','5','6','7','8','9','del','0','clear'].forEach(k=>{
-    const b = document.createElement('button'); b.className='key';
-    if(k==='del'){ b.classList.add('del'); b.innerHTML='<svg viewBox="0 0 24 24"><path d="M9 5h11a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H9l-6-7 6-7z"/><path d="M13 9.5l5 5M18 9.5l-5 5"/></svg>'; }
-    else if(k==='clear'){ b.classList.add('del'); b.textContent='C'; }
-    else b.textContent=k;
-    b.addEventListener('click', ()=>press(k)); np.appendChild(b);
-  });
+  buildNumpad($('r-numpad'), k=>press(k));
   function press(k){
     if(R.busy || !R.problem) return;
     if(k==='del') R.input=R.input.slice(0,-1); else if(k==='clear') R.input=''; else if(R.input.length<3) R.input+=k; else return;
@@ -2418,6 +2533,181 @@ $('tile-art-rocket').innerHTML = `<svg viewBox="0 0 120 64" aria-hidden="true">$
     $('r-end').classList.add('show'); Sfx.play('win'); R.stopConfetti = runConfetti($('r-confetti'));
   }
   function hideEnd(){ $('r-end').classList.remove('show'); if(R.stopConfetti) R.stopConfetti(); }
+})();
+
+/* ========================================================= */
+/* GAME 7: Fairy-tale tournament                              */
+/* ========================================================= */
+const KOLOBOK = `<svg viewBox="0 0 100 100" aria-hidden="true"><ellipse cx="50" cy="92" rx="30" ry="5" fill="rgba(0,0,0,.12)"/><circle cx="50" cy="52" r="36" fill="#F4C542"/><path d="M22 40 Q50 18 78 40" stroke="#E0A92B" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="38" cy="48" r="4.2" fill="#2B2B2B"/><circle cx="62" cy="48" r="4.2" fill="#2B2B2B"/><circle cx="39.5" cy="46.5" r="1.4" fill="#fff"/><circle cx="63.5" cy="46.5" r="1.4" fill="#fff"/><path d="M40 62 Q50 72 60 62" stroke="#2B2B2B" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="29" cy="58" r="5" fill="#FF9AA2" opacity=".7"/><circle cx="71" cy="58" r="5" fill="#FF9AA2" opacity=".7"/></svg>`;
+const ZMEY = `<svg viewBox="0 0 100 100" aria-hidden="true"><ellipse cx="50" cy="92" rx="34" ry="5" fill="rgba(0,0,0,.12)"/><ellipse cx="50" cy="74" rx="32" ry="18" fill="#4CAF50"/><ellipse cx="50" cy="80" rx="20" ry="9" fill="#C5E8A6"/><path d="M30 66 Q12 52 18 30" stroke="#4CAF50" stroke-width="11" fill="none" stroke-linecap="round"/><path d="M50 60 V24" stroke="#4CAF50" stroke-width="11" stroke-linecap="round"/><path d="M70 66 Q88 52 82 30" stroke="#4CAF50" stroke-width="11" fill="none" stroke-linecap="round"/><circle cx="18" cy="26" r="12" fill="#66BB6A"/><circle cx="50" cy="19" r="13" fill="#66BB6A"/><circle cx="82" cy="26" r="12" fill="#66BB6A"/><path d="M12 14 L15 20 M24 14 L21 20 M44 6 L47 12 M56 6 L53 12 M76 14 L79 20 M88 14 L85 20" stroke="#2E7D32" stroke-width="3" stroke-linecap="round"/><circle cx="14" cy="25" r="2.6" fill="#1B3B1E"/><circle cx="22" cy="25" r="2.6" fill="#1B3B1E"/><circle cx="46" cy="18" r="2.8" fill="#1B3B1E"/><circle cx="54" cy="18" r="2.8" fill="#1B3B1E"/><circle cx="78" cy="25" r="2.6" fill="#1B3B1E"/><circle cx="86" cy="25" r="2.6" fill="#1B3B1E"/><path d="M14 32 q4 3 8 0 M46 26 q4 3 8 0 M78 32 q4 3 8 0" stroke="#1B3B1E" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M6 24 l-5 -2 l4 -3 M94 24 l5 -2 l-4 -3" stroke="#F0657A" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`;
+const TOUR_HEROES = [
+  {n:'Волшебник', e:'🧙'}, {n:'Баба-Яга', e:'🧙‍♀️'}, {n:'Змей Горыныч', svg:ZMEY}, {n:'Колобок', svg:KOLOBOK}, {n:'Фея', e:'🧚'}, {n:'Русалка', e:'🧜‍♀️'},
+  {n:'Единорог', e:'🦄'}, {n:'Царевна', e:'👸'}, {n:'Царевич', e:'🤴'}, {n:'Эльф', e:'🧝'}, {n:'Джинн', e:'🧞'}, {n:'Царевна-лягушка', e:'🐸'},
+  {n:'Серый волк', e:'🐺'}, {n:'Лиса Патрикеевна', e:'🦊'}, {n:'Михайло Потапыч', e:'🐻'}, {n:'Кот в сапогах', e:'🐱'}, {n:'Мудрая сова', e:'🦉'}, {n:'Тролль', e:'🧌'},
+  {n:'Дракончик', e:'🐲'}, {n:'Водяной', e:'🧜‍♂️'}, {n:'Жар-птица', e:'🦚'}, {n:'Золотая рыбка', e:'🐠'}, {n:'Зайчик', e:'🐰'}, {n:'Три поросёнка', e:'🐷'}, {n:'Мышка-норушка', e:'🐭'}
+];
+const heroArt = h => h.svg ? h.svg : `<span class="em">${h.e}</span>`;
+$('tile-art-tour').innerHTML = ZMEY;
+
+(function(){
+  const CARDS = 20, PLAYER = 'Мия';
+  const BONUS = { green:50, red:-10 };
+  const cfg = Object.assign({ level:3 }, store.get('tour', {}));
+  const T = { deck:[], turn:'mia', scores:{mia:0,cpu:0}, busy:false, timers:[], stopConfetti:null, input:'', current:null };
+  const screens = { start:$('t-start'), game:$('t-game') };
+  function show(name){ Object.values(screens).forEach(x=>x.classList.remove('active')); screens[name].classList.add('active'); window.scrollTo(0,0); }
+  function clearTimers(){ T.timers.forEach(clearTimeout); T.timers=[]; }
+  function later(fn, ms){ const t=setTimeout(fn, ms); T.timers.push(t); return t; }
+  onEnter.tour = ()=>{ clearTimers(); T.busy=false; closeModal(); if(T.stopConfetti) T.stopConfetti(); renderStart(); show('start'); };
+  const pts = n => `${n>0?'+':n<0?'-':''}${Math.abs(n)} ${plural(n,'очко','очка','очков')}`;
+
+  function renderStart(){
+    $('t-rules').innerHTML = `
+      <div class="rule">${ZMEY}<div class="rule-pts word">+10 / +20 / +30</div><div class="rule-text">Решил пример героя: получаешь его очки</div></div>
+      <div class="rule">${POT_GREEN}<div class="rule-pts plus">+${BONUS.green}</div><div class="rule-text">Сюрприз под героем: зелёный горшочек</div></div>
+      <div class="rule">${POT_RED}<div class="rule-pts minus">${BONUS.red}</div><div class="rule-text">Сюрприз под героем: красный горшочек</div></div>`;
+    $('t-level').innerHTML = LEVELS.map((_,i)=>`<button class="mode-btn ${cfg.level===i+1?'selected':''}" data-lvl="${i+1}">${i+1}</button>`).join('');
+    $('t-level').querySelectorAll('.mode-btn').forEach(b=>b.addEventListener('click', ()=>{ cfg.level=parseInt(b.dataset.lvl,10); store.set('tour',cfg); renderStart(); Sfx.play('tap'); }));
+    $('t-levelname').textContent = `Уровень ${cfg.level}: примеры ${LEVELS[cfg.level-1]}.`;
+  }
+  renderStart();
+  $('t-play').addEventListener('click', ()=>{ Sfx.play('tap'); startGame(); });
+  Sfx.bind($('t-sound'));
+  $('t-home').addEventListener('click', ()=>{ Sfx.play('tap'); clearTimers(); T.busy=false; closeModal(); renderStart(); show('start'); });
+  $('t-again').addEventListener('click', ()=>{ Sfx.play('tap'); hideEnd(); startGame(); });
+  $('t-menu').addEventListener('click', ()=>{ Sfx.play('tap'); hideEnd(); go(''); });
+
+  function buildDeck(){
+    const heroes = TOUR_HEROES.slice().sort(()=>Math.random()-.5).slice(0, CARDS);
+    const tiers = [...Array(8).fill(0), ...Array(7).fill(1), ...Array(5).fill(2)].sort(()=>Math.random()-.5);
+    const surprises = [...Array(5).fill('green'), ...Array(3).fill('red'), ...Array(CARDS-8).fill('')].sort(()=>Math.random()-.5);
+    return heroes.map((h,i)=>{
+      const level = Math.min(8, cfg.level + tiers[i]);
+      const p = genProblem(level, rnd(['+','-']), true);
+      return { i, hero:h, p, points:10*(tiers[i]+1), surprise:surprises[i], done:false, owner:null };
+    });
+  }
+  function renderGrid(){
+    $('t-grid').innerHTML = T.deck.map(c=>`
+      <button class="hcard ${c.done?'done '+(c.owner||'burnt'):''}" data-i="${c.i}" ${c.done?'disabled':''}>
+        <span class="pts p${c.points}">+${c.points}</span>
+        ${c.done ? `<span class="owner">${c.owner==='mia'?'👧':c.owner==='cpu'?'🤖':'✖'}</span>` : ''}
+        <div class="art">${heroArt(c.hero)}</div>
+        <div class="hname">${c.hero.n}</div>
+        <div class="ex ${c.p.terms===3?'l3':''}">${c.done ? c.p.text+' = '+c.p.ans : c.p.text}</div>
+        ${c.done && c.owner && c.surprise ? `<div class="surprise ${c.surprise==='red'?'bad':''}">${c.surprise==='green'?'+'+BONUS.green:BONUS.red} сюрприз</div>` : ''}
+      </button>`).join('');
+    $('t-grid').querySelectorAll('.hcard:not(:disabled)').forEach(b=>b.addEventListener('click', ()=>onPick(T.deck[parseInt(b.dataset.i,10)])));
+  }
+  function setStatus(text, who, dots){ const s=$('t-status'); s.innerHTML = text + (dots?'<span class="dots"></span>':''); s.className='status '+(who||''); }
+  function setTurn(who){
+    T.turn = who; $('t-p-mia').classList.toggle('active', who==='mia'); $('t-p-cpu').classList.toggle('active', who==='cpu');
+    if(who==='mia') setStatus(`${PLAYER}, выбери героя и реши его пример!`, 'mia'); else setStatus('Компьютер выбирает героя', 'cpu', true);
+  }
+  function addScore(who, delta){
+    T.scores[who] += delta;
+    const el = $(who==='mia'?'t-s-mia':'t-s-cpu'), pl = $(who==='mia'?'t-p-mia':'t-p-cpu');
+    el.textContent = T.scores[who];
+    el.classList.remove('up','down'); void el.offsetWidth; el.classList.add(delta>=0?'up':'down'); setTimeout(()=>el.classList.remove('up','down'), 900);
+    const f = document.createElement('span'); f.className='float '+(delta>=0?'plus':'minus'); f.textContent=(delta>=0?'+':'-')+Math.abs(delta); pl.appendChild(f); setTimeout(()=>f.remove(), 1300);
+    Sfx.play(delta>=0?'coin':'lose');
+  }
+  function modal(html){ $('t-modal-card').innerHTML = html; $('t-modal').classList.add('show'); }
+  function closeModal(){ $('t-modal').classList.remove('show'); T.current=null; }
+  const left = () => T.deck.filter(c=>!c.done);
+  const eqHTML = (p, val, cls) => { const three=p.terms===3; return `<div class="t-eq"><div class="eq-term ${three?'wide':''}">${three?`${p.a} ${p.op} ${p.b}`:p.a}</div><div class="eq-op">${three?p.op2:p.op}</div><div class="eq-term">${three?p.c:p.b}</div><div class="eq-op">=</div><div class="eq-term slot ${val?'filled':'empty-q'} ${cls||''}" id="t-ans">${val||'?'}</div></div>`; };
+
+  /* Mia's turn */
+  function onPick(card){
+    if(T.busy || T.turn!=='mia' || card.done) return;
+    T.busy = true; T.current = card; T.input = ''; Sfx.play('flip');
+    modal(`<div class="modal-art">${heroArt(card.hero).replace('class="em"','class="big-emoji"')}</div>
+      <h3>${card.hero.n}: ${pts(card.points)}</h3>
+      ${eqHTML(card.p, '')}
+      <div class="t-result" id="t-result"></div>
+      <div class="hint" id="t-hint"></div>
+      <div class="t-numpad" id="t-numpad"></div>
+      <button class="t-check" id="t-check">Проверить</button>`);
+    buildNumpad($('t-numpad'), press);
+    $('t-check').addEventListener('click', check);
+  }
+  function press(k){
+    if(!T.current || T.turn!=='mia' || !$('t-numpad')) return;
+    if(k==='del') T.input=T.input.slice(0,-1); else if(k==='clear') T.input=''; else if(T.input.length<3) T.input+=k; else return;
+    Sfx.play('tap'); const a=$('t-ans'); a.textContent=T.input||'?'; a.className='eq-term slot '+(T.input?'filled':'empty-q');
+  }
+  document.addEventListener('keydown', e=>{
+    if(currentRoute()!=='tour' || !$('t-modal').classList.contains('show') || T.turn!=='mia' || !$('t-numpad')) return;
+    if(e.key>='0'&&e.key<='9'){ press(e.key); e.preventDefault(); } else if(e.key==='Backspace'){ press('del'); e.preventDefault(); } else if(e.key==='Enter'){ check(); e.preventDefault(); }
+  });
+  function check(){
+    const card = T.current; if(!card || T.turn!=='mia') return;
+    if(T.input===''){ const a=$('t-ans'); a.classList.remove('wiggle'); void a.offsetWidth; a.classList.add('wiggle'); return; }
+    const v = parseInt(T.input,10);
+    $('t-numpad').remove(); $('t-check').remove();
+    resolve('mia', card, v===card.p.ans, v);
+  }
+  function resolve(who, card, ok, given){
+    card.done = true; card.owner = ok ? who : null;
+    const a = $('t-ans'); if(a){ a.textContent = given; a.classList.add(ok?'right':'wrong'); a.style.color = ok ? 'var(--green-dark)' : 'var(--red)'; a.style.borderColor = ok ? 'var(--green)' : 'var(--red)'; }
+    const res = $('t-result');
+    if(ok){
+      Sfx.play('ok'); addScore(who, card.points);
+      res.className='t-result ok'; res.textContent = `Правильно! ${pts(card.points)}`;
+      later(()=>{
+        const sur = card.surprise;
+        const block = document.createElement('div'); block.className='t-surprise';
+        block.innerHTML = sur==='green' ? `${POT_GREEN}<div class="pts-big plus">Сюрприз: ${pts(BONUS.green)}</div>` : sur==='red' ? `${POT_RED}<div class="pts-big minus">Сюрприз: ${pts(BONUS.red)}</div>` : `<span class="big-emoji">⭐</span><div class="who">Сюрприза нет, но очки твои!</div>`;
+        $('t-modal-card').appendChild(block);
+        if(sur) addScore(who, BONUS[sur]);
+      }, 900);
+      later(()=>{ closeModal(); renderGrid(); endTurn(); }, 3000);
+    } else {
+      Sfx.play('no');
+      res.className='t-result bad'; res.textContent = `Неправильно. ${card.p.text} = ${card.p.ans}`;
+      const h = $('t-hint'); if(h){ h.innerHTML = problemHint(card.p, false); h.classList.add('show'); }
+      later(()=>{ closeModal(); renderGrid(); endTurn(); }, who==='mia' ? 4200 : 2600);
+    }
+  }
+  function endTurn(){
+    T.busy = false;
+    if(!left().length){ later(finish, 400); return; }
+    if(T.turn==='mia'){ setTurn('cpu'); T.busy=true; later(cpuTurn, 1000); }
+    else setTurn('mia');
+  }
+  /* computer's turn: prefers expensive heroes, solves correctly about 3 times out of 4 */
+  function cpuTurn(){
+    const options = left(); if(!options.length){ finish(); return; }
+    const weighted = options.flatMap(c=>Array(c.points/10).fill(c));
+    const card = rnd(weighted); T.current = card;
+    const el = $('t-grid').querySelector(`.hcard[data-i="${card.i}"]`); if(el) el.style.boxShadow='0 0 0 5px #4F8FE6';
+    later(()=>{
+      Sfx.play('flip');
+      modal(`<div class="modal-art">${heroArt(card.hero).replace('class="em"','class="big-emoji"')}</div>
+        <p class="who">Компьютер выбрал</p><h3>${card.hero.n}: ${pts(card.points)}</h3>
+        ${eqHTML(card.p, '')}
+        <p class="who">Компьютер считает<span class="dots"></span></p>
+        <div class="t-result" id="t-result"></div><div class="hint" id="t-hint"></div>`);
+      const ok = Math.random() < .75;
+      const wrong = card.p.ans + rnd([-10,-2,-1,1,2,10].filter(d=>card.p.ans+d>=0));
+      later(()=>resolve('cpu', card, ok, ok ? card.p.ans : wrong), 1500);
+    }, 1100);
+  }
+  function startGame(){
+    clearTimers(); closeModal();
+    T.deck = buildDeck(); T.scores={mia:0,cpu:0}; T.busy=false;
+    $('t-s-mia').textContent='0'; $('t-s-cpu').textContent='0';
+    renderGrid(); setTurn('mia'); show('game');
+  }
+  function finish(){
+    const m=T.scores.mia, c=T.scores.cpu, win=m>c, tie=m===c;
+    $('t-end-hero').innerHTML = `<span class="big-emoji">${win?'🏆':tie?'🤝':'🤖'}</span>`;
+    $('t-end-title').textContent = win ? `Победила ${PLAYER}!` : tie ? 'Ничья!' : 'Победил компьютер';
+    $('t-end-text').textContent = `${PLAYER}: ${m} ${plural(m,'очко','очка','очков')}, компьютер: ${c} ${plural(c,'очко','очка','очков')}.` + (win ? ' Турнир твой!' : tie ? ' Отличная игра!' : ' В следующий раз точно получится!');
+    $('t-end').classList.add('show');
+    if(win||tie){ Sfx.play('win'); T.stopConfetti = runConfetti($('t-confetti')); } else Sfx.play('no');
+  }
+  function hideEnd(){ $('t-end').classList.remove('show'); if(T.stopConfetti) T.stopConfetti(); }
 })();
 
 route();
