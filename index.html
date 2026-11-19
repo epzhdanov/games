@@ -385,6 +385,35 @@ details.settings[open] summary::after{content:'−'}
 .cmp.wrong{background:#FDE8EB;border-color:var(--red);animation:wiggle .4s ease}
 .cmp:disabled{cursor:default}
 @media (max-width:560px){.cmp{width:30%;min-width:96px;padding:10px 4px 8px}.cmp svg{width:64px;height:36px}.cmp .sym{font-size:28px}.cmp .lbl{font-size:11px}}
+
+/* ---------- Rocket ---------- */
+.title span.grad6{background-image:linear-gradient(90deg,#F0657A,#9B5DE5)}
+.sky-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:10px}
+.sky-card svg{width:100%;height:auto;display:block;border-radius:18px}
+.rocket-pos{transition:transform .9s cubic-bezier(.3,1.1,.4,1)}
+.rocket-anim{transform-box:fill-box;transform-origin:center;animation:hover 2.2s ease-in-out infinite}
+@keyframes hover{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-5px) rotate(2deg)}}
+.rocket-anim.shake{animation:shake .55s ease}
+.flame{transform-box:fill-box;transform-origin:right center;animation:flame .25s ease-in-out infinite alternate}
+@keyframes flame{from{transform:scaleX(.7) scaleY(.85)}to{transform:scaleX(1.15) scaleY(1.1)}}
+.station{transform-box:fill-box;transform-origin:center}
+.station.lit{animation:pop .5s cubic-bezier(.2,1.6,.4,1)}
+.frame .dot.on2{background:var(--blue);border:2.5px solid var(--blue)}
+.frame .dot.x{background:linear-gradient(45deg,transparent 40%,var(--red) 40%,var(--red) 60%,transparent 60%),linear-gradient(-45deg,transparent 40%,var(--red) 40%,var(--red) 60%,transparent 60%),#FFF0F1;border:2.5px solid var(--red)}
+.progress-box{max-width:600px;margin:18px auto 0;background:rgba(255,255,255,.8);border-radius:22px;padding:14px 18px;box-shadow:var(--shadow);text-align:left}
+.progress-box h3{margin:0 0 8px;font-size:16px;font-weight:900}
+.prow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 0;border-top:1px solid #EEF2F5;font-size:15px;font-weight:700;color:var(--muted)}
+.prow:first-of-type{border-top:0}
+.prow b{color:var(--ink)}
+.lvl-pill{display:inline-block;background:#FFF1C9;color:#8A5A00;padding:2px 10px;border-radius:10px;font-weight:900;margin-left:4px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.chip{background:#FDE8EB;color:#B5102F;border-radius:10px;padding:4px 10px;font-weight:900;font-size:15px}
+.chip.ok{background:#E7F8EE;color:var(--green-dark)}
+.reset-btn{margin-top:10px;padding:8px 14px;border-radius:999px;background:#F3F6F9;color:var(--muted);font-weight:800;font-size:13px}
+.reset-btn.arm{background:#FDE8EB;color:var(--red)}
+.flight-note{text-align:center;font-size:15px;font-weight:800;color:var(--muted);min-height:22px}
+.flight-note.up{color:var(--green-dark)}
+.flight-note.down{color:var(--orange)}
 </style>
 </head>
 <body>
@@ -424,6 +453,13 @@ details.settings[open] summary::after{content:'−'}
         <div class="tile-art" id="tile-art-croc"></div>
         <div class="tile-name">Голодный крокодил</div>
         <div class="tile-desc">Где больше? Крокодил открывает пасть к большему числу</div>
+        <span class="tile-play">Играть</span>
+      </button>
+
+      <button class="tile" data-go="rocket" style="--c:#F0657A;--bg:#FDEAEE">
+        <div class="tile-art" id="tile-art-rocket"></div>
+        <div class="tile-name">Математическая ракета</div>
+        <div class="tile-desc">Сложение и вычитание: примеры подстраиваются под тебя и помнят ошибки</div>
         <span class="tile-play">Играть</span>
       </button>
     </div>
@@ -690,6 +726,63 @@ details.settings[open] summary::after{content:'−'}
   </div>
 </section>
 
+<!-- ================= ROCKET ================= -->
+<section id="view-rocket" class="view">
+  <section id="r-start" class="screen active">
+    <div class="topline"><button class="pill-btn" data-go=""><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>Все игры</button></div>
+    <div class="start-wrap">
+      <h1 class="title">Математическая<br><span class="grad6">ракета</span></h1>
+      <p class="subtitle">Ракета Пип летит к Луне: каждый решённый пример поднимает её на одну станцию. Примеры подбираются под тебя: игра запоминает, где были ошибки, и не даёт сложнее, пока эти не получатся.</p>
+      <h2 class="label">Какие примеры?</h2>
+      <div class="modes" id="r-mode">
+        <button class="mode-btn" data-mode="plus">Сложение</button>
+        <button class="mode-btn" data-mode="minus">Вычитание</button>
+        <button class="mode-btn" data-mode="mix">Вперемешку</button>
+      </div>
+      <div class="progress-box" id="r-progress"></div>
+      <div><button id="r-play" class="btn-big">Полетели!</button></div>
+      <p class="start-hint">Уровни: до 5, до 10, до 20 без перехода через десяток, до 20 с переходом, круглые десятки, двузначные без перехода и с переходом. Уровень растёт после 8 правильных ответов подряд и опускается после двух ошибок подряд.</p>
+    </div>
+  </section>
+  <section id="r-game" class="screen">
+    <header class="topbar">
+      <button id="r-home" class="icon-btn" title="В начало" aria-label="В начало"><svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10"/><path d="M10 20v-6h4v6"/></svg></button>
+      <div class="stars" id="r-stars"></div>
+      <button id="r-sound" class="icon-btn" title="Звук" aria-label="Звук"></button>
+    </header>
+    <div class="s-panel">
+      <div class="round-label" id="r-round"></div>
+      <div class="sky-card"><svg id="sky" viewBox="0 0 900 240" role="img" aria-label="Полёт ракеты к Луне"></svg></div>
+      <div class="flight-note" id="r-note"></div>
+      <div class="panel">
+        <div class="bubble"><div class="bubble-hero" id="r-bubble-hero"></div><div class="bubble-text" id="r-bubble"></div></div>
+        <div class="equation" id="r-eq">
+          <div class="eq-term" id="r-a"></div>
+          <div class="eq-op" id="r-op">+</div>
+          <div class="eq-term" id="r-b"></div>
+          <div class="eq-op">=</div>
+          <div class="eq-term slot empty-q" id="r-ans">?</div>
+        </div>
+        <div class="feedback" id="r-feedback"></div>
+        <div class="hint" id="r-hint"></div>
+        <div class="numpad" id="r-numpad"></div>
+        <button id="r-check" class="btn-check">Проверить</button>
+      </div>
+    </div>
+  </section>
+  <div id="r-end" class="overlay">
+    <canvas id="r-confetti"></canvas>
+    <div class="win-card">
+      <div class="win-hero" id="r-end-hero"></div>
+      <h2>Прилетели!</h2>
+      <p id="r-end-text"></p>
+      <div class="win-stars" id="r-end-stars"></div>
+      <p id="r-end-stats"></p>
+      <div class="win-btns"><button id="r-again" class="btn-big green">Ещё полёт</button><button id="r-menu" class="btn-ghost">Все игры</button></div>
+    </div>
+  </div>
+</section>
+
 <script>
 (function(){
 'use strict';
@@ -846,9 +939,9 @@ function speak(text, lang){
 /* ========================================================= */
 /* Router                                                     */
 /* ========================================================= */
-const views = { menu:$('view-menu'), maze:$('view-maze'), cards:$('view-cards'), pond:$('view-pond'), scales:$('view-scales'), croc:$('view-croc') };
-const onEnter = { maze:null, cards:null, pond:null, scales:null, croc:null };
-function currentRoute(){ const h=(location.hash||'').replace('#',''); return ['maze','cards','pond','scales','croc'].includes(h)?h:'menu'; }
+const views = { menu:$('view-menu'), maze:$('view-maze'), cards:$('view-cards'), pond:$('view-pond'), scales:$('view-scales'), croc:$('view-croc'), rocket:$('view-rocket') };
+const onEnter = { maze:null, cards:null, pond:null, scales:null, croc:null, rocket:null };
+function currentRoute(){ const h=(location.hash||'').replace('#',''); return ['maze','cards','pond','scales','croc','rocket'].includes(h)?h:'menu'; }
 function route(){
   const r = currentRoute();
   Object.keys(views).forEach(k=>views[k].classList.toggle('active', k===r));
@@ -2083,6 +2176,248 @@ $('tile-art-croc').innerHTML = crocSVG();
     $('k-end').classList.add('show'); Sfx.play('win'); K.stopConfetti = runConfetti($('k-confetti'));
   }
   function hideEnd(){ $('k-end').classList.remove('show'); if(K.stopConfetti) K.stopConfetti(); }
+})();
+
+/* ========================================================= */
+/* GAME 6: Math rocket (adaptive add / subtract)              */
+/* ========================================================= */
+const ROCKET = `
+  <path d="M26 24 L4 32 L26 40 Z" class="flame" fill="#F4B942"/>
+  <path d="M18 27 L8 32 L18 37 Z" class="flame" fill="#F0657A" opacity=".8"/>
+  <path d="M28 16 L16 4 L40 16 Z" fill="#9B5DE5"/>
+  <path d="M28 48 L16 60 L40 48 Z" fill="#9B5DE5"/>
+  <path d="M26 16 H74 Q102 16 112 32 Q102 48 74 48 H26 Z" fill="#F0657A"/>
+  <path d="M26 16 H74 Q90 16 98 24 H26 Z" fill="#FF8A9B"/>
+  <circle cx="62" cy="32" r="12" fill="#fff"/><circle cx="62" cy="32" r="9" fill="#9BD3F5"/>
+  <circle cx="59" cy="31" r="1.8" fill="#1B3B1E"/><circle cx="65" cy="31" r="1.8" fill="#1B3B1E"/>
+  <path d="M59 35 Q62 38 65 35" stroke="#1B3B1E" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <circle cx="86" cy="32" r="3" fill="#FFF3C4"/>`;
+const rocketSVG = () => `<svg viewBox="0 0 120 64" aria-hidden="true">${ROCKET}</svg>`;
+$('tile-art-rocket').innerHTML = `<svg viewBox="0 0 120 64" aria-hidden="true">${ROCKET}</svg>`;
+
+(function(){
+  const FLIGHT = 10, MAXL = 7, UP_STREAK = 8;
+  const LEVELS = ['до 5','до 10','до 20 без перехода через десяток','до 20 с переходом через десяток','круглые десятки и двузначное с однозначным','двузначные без перехода','двузначные с переходом'];
+  const MODES = { plus:'сложение', minus:'вычитание', mix:'вперемешку' };
+  const randInt = (a,b) => a + Math.floor(Math.random()*(b-a+1));
+  const fresh = () => ({ level:1, streak:0, recent:[] });
+  const saved = store.get('rocket', null) || {};
+  const D = {
+    mode: MODES[saved.mode] ? saved.mode : 'mix',
+    prog: Object.assign({plus:fresh(), minus:fresh(), mix:fresh()}, saved.prog||{}),
+    weak: saved.weak || {},
+    total: Object.assign({answered:0, mistakes:0, flights:0}, saved.total||{})
+  };
+  function save(){ store.set('rocket', D); }
+  const R = { step:0, firstTry:0, problem:null, tries:0, input:'', busy:false, flightMistakes:0, timers:[], stopConfetti:null, startLevel:1 };
+  const screens = { start:$('r-start'), game:$('r-game') };
+  function show(name){ Object.values(screens).forEach(x=>x.classList.remove('active')); screens[name].classList.add('active'); window.scrollTo(0,0); }
+  function clearTimers(){ R.timers.forEach(clearTimeout); R.timers=[]; }
+  function later(fn, ms){ const t=setTimeout(fn, ms); R.timers.push(t); return t; }
+  const prog = () => D.prog[D.mode];
+  onEnter.rocket = ()=>{ clearTimers(); R.busy=false; if(R.stopConfetti) R.stopConfetti(); renderStart(); show('start'); };
+
+  /* ---- problem generator ---- */
+  function gen(level, op){
+    const r = randInt; let a, b;
+    if(level===1){ if(op==='+'){ a=r(1,4); b=r(1,5-a); } else { a=r(2,5); b=r(1,a-1); } }
+    else if(level===2){ if(op==='+'){ a=r(1,9); b=r(1,10-a); } else { a=r(3,10); b=r(1,a-1); } }
+    else if(level===3){ if(op==='+'){ if(Math.random()<.3){ a=10; b=r(1,9); } else { a=r(11,18); b=r(1,9-(a%10)); } } else { a=r(11,19); b=Math.random()<.3 ? 10 : r(1,a%10); } }
+    else if(level===4){ if(op==='+'){ a=r(2,9); b=r(11-a,9); } else { a=r(11,18); b=r(a-9,9); } }
+    else if(level===5){
+      if(Math.random()<.5){ if(op==='+'){ a=10*r(1,8); b=10*r(1,(100-a)/10); } else { a=10*r(2,10); b=10*r(1,a/10-1); } }
+      else { if(op==='+'){ const u=r(1,8); a=10*r(1,8)+u; b=r(1,9-u); } else { const u=r(2,9); a=10*r(1,9)+u; b=r(1,u-1); } }
+    }
+    else if(level===6){
+      if(op==='+'){ const ta=r(1,8), ua=r(1,8); a=10*ta+ua; b=10*r(1,9-ta)+r(1,9-ua); }
+      else { const ta=r(2,9), ua=r(1,9); a=10*ta+ua; b=10*r(1,ta-1)+r(0,ua); }
+    }
+    else {
+      if(op==='+'){ const ua=r(2,9); a=10*r(1,5)+ua; b=10*r(1,4)+r(10-ua,9); if(a+b>100) b-=10; }
+      else { const ua=r(0,8); a=10*r(3,9)+ua; b=10*r(1,Math.floor(a/10)-1)+r(ua+1,9); }
+    }
+    const ans = op==='+' ? a+b : a-b;
+    return { a, b, op, ans, text:`${a} ${op} ${b}`, level };
+  }
+  function pickOp(){ return D.mode==='mix' ? rnd(['+','-']) : (D.mode==='plus' ? '+' : '-'); }
+  function nextProblem(){
+    const pr = prog(), op = pickOp();
+    const weakList = Object.values(D.weak).filter(w => w.p.level<=pr.level && (D.mode==='mix' || w.p.op===op) && w.p.text!==(R.problem&&R.problem.text));
+    if(weakList.length && Math.random()<.35){ const w = rnd(weakList); return Object.assign({}, w.p, {fromWeak:true}); }
+    let level = pr.level;
+    if(level>1 && Math.random()<.12) level--;
+    let p = gen(level, op), n = 0;
+    while(R.problem && p.text===R.problem.text && n++<8) p = gen(level, op);
+    return p;
+  }
+  function recordCorrect(p){
+    const pr = prog(); pr.streak++; pr.recent.push(1); if(pr.recent.length>20) pr.recent.shift();
+    D.total.answered++;
+    if(p.fromWeak && D.weak[p.text]){ D.weak[p.text].ok++; if(D.weak[p.text].ok>=2) delete D.weak[p.text]; }
+    let note = '';
+    if(pr.streak>=UP_STREAK && pr.level<MAXL){ pr.level++; pr.streak=0; note = `Уровень выше! Теперь примеры ${LEVELS[pr.level-1]}.`; }
+    save(); return note;
+  }
+  function recordWrong(p){
+    const pr = prog(); pr.streak=0; pr.recent.push(0); if(pr.recent.length>20) pr.recent.shift();
+    D.total.answered++; D.total.mistakes++;
+    const w = D.weak[p.text] || (D.weak[p.text] = { p:{a:p.a,b:p.b,op:p.op,ans:p.ans,text:p.text,level:p.level}, n:0, ok:0 });
+    w.n++; w.ok=0;
+    let note = '';
+    const last = pr.recent.slice(-5);
+    if(last.filter(x=>x===0).length>=2 && pr.level>1){ pr.level--; pr.recent=[]; note = `Потренируем попроще: примеры ${LEVELS[pr.level-1]}.`; }
+    save(); return note;
+  }
+
+  /* ---- start screen ---- */
+  function renderStart(){
+    $('r-mode').querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('selected', b.dataset.mode===D.mode));
+    const weak = Object.values(D.weak).sort((x,y)=>y.n-x.n);
+    const chips = weak.length ? `<div class="chips">${weak.slice(0,12).map(w=>`<span class="chip ${w.ok?'ok':''}">${w.p.text}</span>`).join('')}${weak.length>12?`<span class="chip">ещё ${weak.length-12}</span>`:''}</div>` : '<div class="chips"><span class="chip ok">пока ни одной ошибки</span></div>';
+    $('r-progress').innerHTML = `
+      <h3>Как идут дела</h3>
+      <div class="prow"><span>Сложение</span><b>уровень ${D.prog.plus.level}<span class="lvl-pill">${LEVELS[D.prog.plus.level-1]}</span></b></div>
+      <div class="prow"><span>Вычитание</span><b>уровень ${D.prog.minus.level}<span class="lvl-pill">${LEVELS[D.prog.minus.level-1]}</span></b></div>
+      <div class="prow"><span>Вперемешку</span><b>уровень ${D.prog.mix.level}<span class="lvl-pill">${LEVELS[D.prog.mix.level-1]}</span></b></div>
+      <div class="prow" style="flex-direction:column;align-items:flex-start"><span>Примеры, где были ошибки (повторяются, пока не решатся дважды):</span>${chips}</div>
+      <div class="prow"><span>Всего решено: <b>${D.total.answered}</b>, ошибок: <b>${D.total.mistakes}</b>, полётов: <b>${D.total.flights}</b></span><button class="reset-btn" id="r-reset">Сбросить прогресс</button></div>`;
+    const rb = $('r-reset');
+    rb.addEventListener('click', ()=>{
+      if(!rb.classList.contains('arm')){ rb.classList.add('arm'); rb.textContent='Точно сбросить? Нажми ещё раз'; setTimeout(()=>{ rb.classList.remove('arm'); rb.textContent='Сбросить прогресс'; }, 4000); return; }
+      D.prog = {plus:fresh(), minus:fresh(), mix:fresh()}; D.weak = {}; D.total = {answered:0, mistakes:0, flights:0}; save(); renderStart(); Sfx.play('tap');
+    });
+  }
+  $('r-mode').querySelectorAll('.mode-btn').forEach(b=>b.addEventListener('click', ()=>{ D.mode=b.dataset.mode; save(); renderStart(); Sfx.play('tap'); }));
+  $('r-play').addEventListener('click', ()=>{ Sfx.play('tap'); startFlight(); });
+  Sfx.bind($('r-sound'));
+  $('r-home').addEventListener('click', ()=>{ Sfx.play('tap'); clearTimers(); R.busy=false; renderStart(); show('start'); });
+  $('r-again').addEventListener('click', ()=>{ Sfx.play('tap'); hideEnd(); startFlight(); });
+  $('r-menu').addEventListener('click', ()=>{ Sfx.play('tap'); hideEnd(); go(''); });
+  renderStart();
+
+  /* ---- sky ---- */
+  const svg = $('sky');
+  const stationPos = i => ({ x: 90 + i*72, y: 176 - i*10.5 });
+  function renderSky(){
+    const stars = Array.from({length:26},(_,i)=>`<circle cx="${(i*131)%880+10}" cy="${(i*67)%150+8}" r="${1+(i%3)*.6}" fill="#fff" opacity="${.5+(i%4)*.12}"/>`).join('');
+    const stations = Array.from({length:FLIGHT+1},(_,i)=>{ const p=stationPos(i); return `<circle class="station" data-i="${i}" cx="${p.x}" cy="${p.y}" r="${i===0?0:7}" fill="${i<=R.step?'#F4B942':'rgba(255,255,255,.35)'}" stroke="#fff" stroke-width="2"/>`; }).join('');
+    const moon = stationPos(FLIGHT);
+    svg.innerHTML = `
+      <defs><linearGradient id="skyG" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#4F8FE6"/><stop offset="1" stop-color="#1C2A5A"/></linearGradient></defs>
+      <rect width="900" height="240" rx="18" fill="url(#skyG)"/>${stars}
+      <path d="M0 240 Q120 190 240 240 Z" fill="#3DBE7B"/><rect x="54" y="196" width="72" height="12" rx="4" fill="#6B7C85"/>
+      <circle cx="${moon.x+40}" cy="${moon.y-14}" r="44" fill="#F4E7C3"/><circle cx="${moon.x+28}" cy="${moon.y-26}" r="8" fill="#E3D3A8"/><circle cx="${moon.x+54}" cy="${moon.y}" r="6" fill="#E3D3A8"/><circle cx="${moon.x+50}" cy="${moon.y-30}" r="4" fill="#E3D3A8"/>
+      <path d="${Array.from({length:FLIGHT+1},(_,i)=>{ const p=stationPos(i); return (i?'L':'M')+p.x+' '+p.y; }).join(' ')}" stroke="rgba(255,255,255,.35)" stroke-width="3" stroke-dasharray="6 8" fill="none"/>
+      ${stations}
+      <g id="r-rocket-pos" class="rocket-pos"><g class="rocket-anim" id="r-rocket">${ROCKET}</g></g>`;
+    placeRocket(R.step, true);
+  }
+  function placeRocket(step, instant){
+    const p = stationPos(step), g = $('r-rocket-pos');
+    if(instant) g.style.transition = 'none';
+    g.style.transform = `translate(${p.x-60}px,${p.y-32-8}px)`;
+    if(instant){ void svg.getBoundingClientRect(); g.style.transition=''; }
+  }
+  function lightStation(i){ const st = svg.querySelector(`.station[data-i="${i}"]`); if(st){ st.setAttribute('fill','#F4B942'); st.classList.add('lit'); } }
+  function shakeRocket(){ const r=$('r-rocket'); if(!r) return; r.classList.add('shake'); setTimeout(()=>r.classList.remove('shake'), 600); }
+
+  /* ---- problem UI ---- */
+  function renderStars(){ $('r-stars').innerHTML = Array.from({length:FLIGHT},()=>starSVG('')).join(''); }
+  function setBubble(t){ $('r-bubble').textContent = t; }
+  function setFeedback(t, cls){ const f=$('r-feedback'); f.textContent=t; f.className='feedback '+(cls||''); }
+  function setNote(t, cls){ const n=$('r-note'); n.textContent=t; n.className='flight-note '+(cls||''); }
+  function renderEq(){
+    const p = R.problem; if(!p) return;
+    $('r-a').textContent = p.a; $('r-op').textContent = p.op; $('r-b').textContent = p.b;
+    const slot = $('r-ans'); slot.className = 'eq-term slot ' + (R.input?'filled':'empty-q'); slot.textContent = R.input || '?';
+  }
+  function bumpSlot(cls){ const slot=$('r-ans'); slot.classList.remove('bump','wiggle'); void slot.offsetWidth; slot.classList.add(cls||'bump'); }
+  function showHint(reveal){
+    const p = R.problem, h = $('r-hint'); let body = '';
+    if(p.a<=20 && p.b<=20 && p.ans<=20){
+      if(p.op==='+'){
+        const dots = Array.from({length:p.a},()=>'<div class="dot on"></div>').join('') + Array.from({length:p.b},()=>'<div class="dot on2"></div>').join('') + Array.from({length:Math.max(0,20-p.a-p.b)},()=>'<div class="dot"></div>').join('');
+        body = `<div class="hint-text">Оранжевых кружков <b>${p.a}</b>, синих <b>${p.b}</b>. Сколько всего закрашенных?</div><div class="frame">${dots}</div>`;
+      } else {
+        const dots = Array.from({length:p.a},(_,i)=>`<div class="dot ${i>=p.a-p.b?'x':'on'}"></div>`).join('') + Array.from({length:Math.max(0,20-p.a)},()=>'<div class="dot"></div>').join('');
+        body = `<div class="hint-text">Было <b>${p.a}</b>, <b>${p.b}</b> зачёркнули. Сколько осталось закрашенных?</div><div class="frame">${dots}</div>`;
+      }
+    } else if(p.a%10===0 && p.b%10===0){
+      body = `<div class="hint-text">Считаем десятками: <b>${p.a/10}</b> ${p.op} <b>${p.b/10}</b> десятков. А потом припиши ноль.</div>`;
+    } else {
+      const tb = Math.floor(p.b/10)*10, ub = p.b%10;
+      const mid = p.op==='+' ? p.a+tb : p.a-tb;
+      body = tb ? `<div class="hint-text">По шагам: сначала <b>${p.a} ${p.op} ${tb} = ${mid}</b>, потом <b>${mid} ${p.op} ${ub}</b>.</div>`
+                : `<div class="hint-text">Подсказка: отсчитай от <b>${p.a}</b> ${p.op==='+'?'вперёд':'назад'} <b>${ub}</b> ${plural(ub,'шаг','шага','шагов')}.</div>`;
+    }
+    h.innerHTML = body + (reveal ? `<div class="hint-answer">Ответ: <span>${p.ans}</span></div>` : '');
+    h.classList.add('show');
+  }
+  function hideHint(){ const h=$('r-hint'); h.classList.remove('show'); h.innerHTML=''; }
+
+  const np = $('r-numpad');
+  ['1','2','3','4','5','6','7','8','9','del','0','clear'].forEach(k=>{
+    const b = document.createElement('button'); b.className='key';
+    if(k==='del'){ b.classList.add('del'); b.innerHTML='<svg viewBox="0 0 24 24"><path d="M9 5h11a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H9l-6-7 6-7z"/><path d="M13 9.5l5 5M18 9.5l-5 5"/></svg>'; }
+    else if(k==='clear'){ b.classList.add('del'); b.textContent='C'; }
+    else b.textContent=k;
+    b.addEventListener('click', ()=>press(k)); np.appendChild(b);
+  });
+  function press(k){
+    if(R.busy || !R.problem) return;
+    if(k==='del') R.input=R.input.slice(0,-1); else if(k==='clear') R.input=''; else if(R.input.length<3) R.input+=k; else return;
+    Sfx.play('tap'); renderEq(); bumpSlot('bump');
+  }
+  $('r-check').addEventListener('click', check);
+  document.addEventListener('keydown', e=>{
+    if(currentRoute()!=='rocket' || !screens.game.classList.contains('active') || $('r-end').classList.contains('show')) return;
+    if(e.key>='0'&&e.key<='9'){ press(e.key); e.preventDefault(); } else if(e.key==='Backspace'){ press('del'); e.preventDefault(); } else if(e.key==='Enter'){ check(); e.preventDefault(); } else if(e.key==='Escape') press('clear');
+  });
+
+  /* ---- flow ---- */
+  function newProblem(){
+    R.problem = nextProblem(); R.tries = 0; R.input = '';
+    renderEq(); hideHint(); setFeedback('');
+    $('r-round').textContent = `Пример ${R.step+1} из ${FLIGHT}, уровень ${R.problem.level}: ${LEVELS[R.problem.level-1]}`;
+    setBubble(R.problem.fromWeak ? 'Этот пример у нас уже был. Попробуем ещё раз!' : rnd(['Сколько получится?','Считаем!','Какой ответ?','Реши пример, и я полечу дальше!']));
+  }
+  function check(){
+    if(R.busy || !R.problem) return;
+    if(R.input===''){ bumpSlot('wiggle'); setFeedback('Сначала набери число', ''); return; }
+    const v = parseInt(R.input,10), p = R.problem;
+    if(v===p.ans){
+      R.busy = true;
+      const first = R.tries===0;
+      let note = '';
+      if(first){ R.firstTry++; note = recordCorrect(p); Sfx.play('ok'); setFeedback(rnd(['Правильно!','Точно!','Молодец!','Верно!']), 'ok'); const st=$('r-stars').children[R.step]; if(st) st.classList.add('on'); }
+      else { Sfx.play('coin'); setFeedback('Теперь верно! Летим дальше.', 'ok'); }
+      if(note) setNote(note, note.startsWith('Уровень') ? 'up' : '');
+      R.step++; lightStation(R.step); placeRocket(R.step, false); Sfx.play('step');
+      setBubble(first ? `${p.text} = ${p.ans}. Ура, поднимаемся!` : `${p.text} = ${p.ans}. Запомним и полетим дальше.`);
+      later(()=>{ R.busy=false; if(R.step>=FLIGHT) finish(); else newProblem(); }, 1300);
+    } else {
+      R.tries++; Sfx.play('no'); shakeRocket(); bumpSlot('wiggle');
+      if(R.tries===1){ R.flightMistakes++; const note = recordWrong(p); if(note) setNote(note, 'down'); setFeedback('Не совсем. Посмотри на подсказку.', 'bad'); setBubble('Хм, не то число. Я запомню этот пример, потренируем его ещё.'); showHint(false); }
+      else { setFeedback('Подсказываю ответ, набери его.', 'bad'); showHint(true); }
+      R.input=''; setTimeout(renderEq, 300);
+    }
+  }
+  function startFlight(){
+    clearTimers(); R.step=0; R.firstTry=0; R.flightMistakes=0; R.busy=false; R.problem=null; R.startLevel=prog().level;
+    $('r-bubble-hero').innerHTML = rocketSVG();
+    renderStars(); renderSky(); setNote(''); show('game'); newProblem();
+    setBubble(`Привет! Я Пип. Сегодня примеры ${LEVELS[prog().level-1]}. Реши ${FLIGHT} примеров, и я долечу до Луны!`);
+  }
+  function finish(){
+    D.total.flights++; save();
+    const lvl = prog().level;
+    $('r-end-hero').innerHTML = rocketSVG();
+    $('r-end-text').textContent = `Пип долетел до Луны! Звёзд за полёт: ${R.firstTry} из ${FLIGHT}.`;
+    $('r-end-stars').innerHTML = Array.from({length:FLIGHT},(_,i)=>starSVG(i<R.firstTry?'on':'')).join('');
+    $('r-end-stats').textContent = (lvl>R.startLevel ? `Уровень вырос: теперь примеры ${LEVELS[lvl-1]}. ` : lvl<R.startLevel ? `Уровень пока ${LEVELS[lvl-1]}, потренируем и поднимемся. ` : `Уровень: ${LEVELS[lvl-1]}. `) + (R.flightMistakes ? `${plural(R.flightMistakes,'Была','Было','Было')} ${R.flightMistakes} ${plural(R.flightMistakes,'ошибка','ошибки','ошибок')}, эти примеры ещё вернутся.` : 'Без единой ошибки!');
+    $('r-end').classList.add('show'); Sfx.play('win'); R.stopConfetti = runConfetti($('r-confetti'));
+  }
+  function hideEnd(){ $('r-end').classList.remove('show'); if(R.stopConfetti) R.stopConfetti(); }
 })();
 
 route();
